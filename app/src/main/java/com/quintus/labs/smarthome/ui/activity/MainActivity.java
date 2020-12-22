@@ -78,16 +78,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void prepareRoomData() {
-        Room room = new Room("1", "BedRoom");
+        Room room = new Room("1", "Room");
         roomList.add(room);
-        room = new Room("2", "Kitchen");
-        roomList.add(room);
-        room = new Room("1", "Bathroom");
-        roomList.add(room);
-        room = new Room("2", "Hall");
-        roomList.add(room);
-        room = new Room("1", "Dining");
-        roomList.add(room);
+//        room = new Room("2", "Kitchen");
+//        roomList.add(room);
+//        room = new Room("1", "Bathroom");
+//        roomList.add(room);
+//        room = new Room("2", "Hall");
+//        roomList.add(room);
+//        room = new Room("1", "Dining");
+//        roomList.add(room);
 
         mAdapter.notifyDataSetChanged();
     }

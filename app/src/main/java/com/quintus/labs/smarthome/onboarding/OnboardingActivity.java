@@ -15,13 +15,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.quintus.labs.smarthome.R;
 import com.quintus.labs.smarthome.ui.activity.LoginActivity;
 
-/**
- * Smart Home
- * https://github.com/quintuslabs/SmartHome
- * Created on 27-OCT-2019.
- * Created by : Santosh Kumar Dash:- http://santoshdash.epizy.com
- */
-
 public class OnboardingActivity extends AppCompatActivity {
 
     private ViewPager viewPager;

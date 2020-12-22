@@ -1,4 +1,4 @@
-package com.quintus.labs.smarthome.ui.activity;
+ package com.quintus.labs.smarthome.ui.activity;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -19,6 +19,7 @@ import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.*;
@@ -31,6 +32,8 @@ public class RoomDetailsActivity extends AppCompatActivity {
     String stringJson;
     float temperature;
     float humidity;
+    float gas;
+    int rain;
     int led1=0;
     int led2=0;
     String send;
@@ -38,11 +41,16 @@ public class RoomDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_details);
-        String clientId = MqttClient.generateClientId();
-        client = new MqttAndroidClient(this.getApplicationContext(), "tcp://mqtt.eclipse.org:1883", clientId);
+        MqttConnectOptions options = new MqttConnectOptions();
+        LoginActivity Obj =new LoginActivity();
+        options.setUserName("client01");
+        options.setPassword("client01".toCharArray());
+        String clientId ="client01";
+
+        client = new MqttAndroidClient(this.getApplicationContext(), "tcp://node02.myqtthub.com:1883", clientId);
 
         try {
-            IMqttToken token = client.connect();
+            IMqttToken token = client.connect(options);
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
@@ -55,7 +63,6 @@ public class RoomDetailsActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    // Something went wrong e.g. connection timeout or firewall problems
                     Log.d("mqtt", "onFailure");
 
                 }
@@ -64,7 +71,7 @@ public class RoomDetailsActivity extends AppCompatActivity {
         catch (MqttException e) {
             e.printStackTrace();
         }
-    }
+       }
     void Pub(String content){
         String topic = "IoT_BT1";
         String payload = content;
@@ -81,7 +88,7 @@ public class RoomDetailsActivity extends AppCompatActivity {
     }
     void Sub(){
         String topic = "IoT_BT2";
-        int qos = 1;
+        int qos = 0;
         try {
             IMqttToken subToken = client.subscribe(topic, qos);
             subToken.setActionCallback(new IMqttActionListener() {
@@ -93,8 +100,7 @@ public class RoomDetailsActivity extends AppCompatActivity {
                 public void onFailure(IMqttToken asyncActionToken,
                                       Throwable exception) {
                     Log.d("mqtt", "onFailure: ");
-                    // The subscription could not be performed, maybe the user was not
-                    // authorized to subscribe on the specified topic e.g. using wildcards
+
                 }
             });
         }
@@ -114,11 +120,33 @@ public class RoomDetailsActivity extends AppCompatActivity {
                 JSONObject objectJson = new JSONObject(stringJson);
                 temperature=objectJson.getInt("temperature");
                 humidity=objectJson.getInt("humidity");
+                gas=objectJson.getInt("gas");
+                rain=objectJson.getInt("rain");
                 PB((CircularProgressBar) findViewById(R.id.progress_circular1),temperature);
                 PB((CircularProgressBar) findViewById(R.id.progress_circular2),humidity);
                 setTex((TextView)findViewById(R.id.textView),temperature);
                 setTex((TextView)findViewById(R.id.textView2),humidity);
                 Log.d("mqtt", String.valueOf(temperature));
+                if(gas>400){
+                   TextView myTextView1=(TextView)findViewById(R.id.textView5);
+                    myTextView1.setText("Cảnh báo khí gas vượt quá mức!");
+                    myTextView1.setTextColor(Color.parseColor("#FF0000"));
+                }
+                if(gas<=400){
+                    TextView myTextView1=(TextView)findViewById(R.id.textView5);
+                    myTextView1.setText("Gas ở mức an toàn");
+                    myTextView1.setTextColor(Color.parseColor("#00CED1"));
+                }
+                if(rain==1){
+                    TextView myTextView2=(TextView)findViewById(R.id.textView4);
+                    myTextView2.setText("Cảnh báo trời mưa!");
+                    myTextView2.setTextColor(Color.parseColor("#FF0000"));
+                }
+                if(rain==0){
+                    TextView myTextView2=(TextView)findViewById(R.id.textView4);
+                    myTextView2.setText("Trời không mưa");
+                    myTextView2.setTextColor(Color.parseColor("#00CED1"));
+                }
             }
 
             @Override
@@ -163,7 +191,6 @@ public class RoomDetailsActivity extends AppCompatActivity {
         if(myTextView==(TextView)findViewById(R.id.textView)){
             myTextView.setText("Nhiệt độ: "+value+"°C");
         }
-
         if(myTextView==(TextView)findViewById(R.id.textView2)){
             myTextView.setText("Độ ẩm: "+value+"%");
         }

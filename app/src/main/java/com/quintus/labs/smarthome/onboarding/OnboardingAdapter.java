@@ -11,20 +11,12 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.quintus.labs.smarthome.R;
 
-/**
- * Smart Home
- * https://github.com/quintuslabs/SmartHome
- * Created on 27-OCT-2019.
- * Created by : Santosh Kumar Dash:- http://santoshdash.epizy.com
- */
-
 public class OnboardingAdapter extends PagerAdapter {
 
     private Context context;
     private int[] layouts = {
             R.layout.onboarding_1,
             R.layout.onboarding_2,
-            R.layout.onboarding_3,
             R.layout.onboarding_4
     };
 
